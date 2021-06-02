@@ -37,10 +37,15 @@ app.get("/:path", function(req, res) {
 
 io.sockets.on("connection", function(socket) {
 
-  for (var i in eventloader.events) {
-    socket.on(i, (...args) => eventloader.events[i].invoke(...args));
+  const events = eventloader.events;
+
+  for (var k in events) {
+    const temp = k;
+
+    socket.on(temp, function(...args) {
+      events[temp].invoke(...args, socket);
+    });
   }
-  
 });
 
 

@@ -8,13 +8,11 @@ const reqHeader = new (require(`${root}/core/socket/events/reqHeader.js`))();
 const info = new (require(`${root}/core/socket/events/info.js`))();
 
 const events = {
-  header,
-  stream,
-  reqHeader,
-  info
+  "header" : header,
+  "stream" : stream,
+  "info" : info,
+  "reqHeader" : reqHeader,
 }
 
 //Main
 module.exports.events = events;
-
-console.log(events);
