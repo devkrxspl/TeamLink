@@ -49,13 +49,14 @@ io.sockets.on("connection", function(socket) {
   //Stream handling
   socket.on("header", function(data) {
 
+    //If room exists, update header
     if (data.room in rooms) {
       rooms[data.room].updateHeader(data.packet);
     }
-
   });
 
   socket.on("reqHeader", function(data) {
+
     //Send header
     if (data.room in rooms) {
       socket.emit("reqHeader", rooms[data.room].header);
@@ -64,16 +65,7 @@ io.sockets.on("connection", function(socket) {
 
   socket.on("stream", function(data) {
 
-    //Locate room and send packets to all users in that room
-    //if (data.room in rooms) {
-    //  for (var i in rooms[data.room].users) {
-
-    //    if (rooms[data.room].users[i].id !== socket.id) {
-    //      rooms[data.room].users[i].emit("stream", data.packet);
-    //    }
-    //  }
-    //}
-
+    //If room exists, stream to all users
     if (data.room in rooms) {
       rooms[data.room].stream(socket, data.packet);
     }
@@ -86,12 +78,11 @@ io.sockets.on("connection", function(socket) {
     if (data.room in rooms) {
 
       //Room exists, join room
-      //rooms[data.room].users.push(socket);
       rooms[data.room].addUser(socket);
+
     } else {
 
       //Room doesn't exist, create room
-      //createRoom(data.room, socket);
       rooms[data.room] = new room(data.room, socket);
     }
   });
@@ -99,18 +90,23 @@ io.sockets.on("connection", function(socket) {
   //Disconnect
   socket.on("disconnect", function() {
 
-    //for (var i in rooms) {
+    //Loop through all rooms
+    for (var i in rooms) {
 
-    //  if (rooms[i].users.includes(socket)) {
-
-    //    rooms[i].users.splice(rooms[i].users.indexOf(socket));
+      //Check if room includes disconnected socket
+      if (rooms[i].users.includes(socket)) {
         
-    //    if (rooms[i].users.length == 0) {
-    //      delete rooms[i];
-    //      break;
-    //    }
-    //  }
-    //}
+        //Remove disconnected socket from room
+        rooms[i].removeUser(socket);
+        
+        //If the room is now empty, delete the room
+        if (rooms[i].users.length == 0) {
+
+          delete rooms[i];
+          break;
+        }
+      }
+    }
   });
 });
 
