@@ -13,7 +13,7 @@ module.exports = class ReqHeaderEvent extends SocketEvent {
     });
   }
 
-  invoke(data, socket) {
+  invoke(socket, data) {
 
     var rooms = roomhandler.raw;
 

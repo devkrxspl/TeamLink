@@ -43,7 +43,7 @@ io.sockets.on("connection", function(socket) {
     const temp = k;
 
     socket.on(temp, function(...args) {
-      events[temp].invoke(...args, socket);
+      events[temp].invoke(socket, ...args);
     });
   }
 });
