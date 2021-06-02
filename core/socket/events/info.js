@@ -3,7 +3,7 @@ const SocketEvent = require("../../../structures/socketevent.js");
 const roomhandler = require("../roomhandler.js");
 
 //Main
-module.exports = class HeaderEvent extends SocketEvent {
+module.exports = class InfoEvent extends SocketEvent {
   
   constructor() {
     super({

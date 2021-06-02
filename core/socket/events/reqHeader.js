@@ -3,7 +3,7 @@ const SocketEvent = require("../../../structures/socketevent.js");
 const roomhandler = require("../roomhandler.js");
 
 //Main
-module.exports = class HeaderEvent extends SocketEvent {
+module.exports = class ReqHeaderEvent extends SocketEvent {
   
   constructor() {
     super({
@@ -17,9 +17,7 @@ module.exports = class HeaderEvent extends SocketEvent {
     var rooms = roomhandler.raw;
 
     if (data.room in rooms) {
-      rooms[data.room].updateHeader(data.packet);
+      socket.emit("reqHeader", rooms[data.room].header);
     }
-
-    roomhandler.update(rooms);
   }
 }

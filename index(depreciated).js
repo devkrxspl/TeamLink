@@ -6,12 +6,6 @@ const http = require("http");
 const root = path.resolve(path.dirname(""));
 const room = require(`${root}/lib/socketroom.js`);
 
-//
-const header = require(`${root}/core/socket/events/header.js`);
-const stream = require(`${root}/core/socket/events/stream.js`);
-const reqheader = require(`${root}/core/socket/events/reqHeader.js`);
-const info = require(`${root}/core/socket/events/info.js`);
-
 //Variables
 var rooms = {};
 
@@ -46,7 +40,11 @@ io.sockets.on("connection", function(socket) {
 
   //Stream handling
   socket.on("header", function(data) {
-    header.invoke(data, socket);
+
+    //If room exists, update header
+    if (data.room in rooms) {
+      rooms[data.room].updateHeader(data.packet);
+    }
   });
 
   socket.on("reqHeader", function(data) {
@@ -58,7 +56,11 @@ io.sockets.on("connection", function(socket) {
   });
 
   socket.on("stream", function(data) {
-    stream.invoke(data, socket);
+
+    //If room exists, stream to all users
+    if (data.room in rooms) {
+      rooms[data.room].stream(socket, data.packet);
+    }
   });
 
   //Socket 
