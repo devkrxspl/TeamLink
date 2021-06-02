@@ -2,7 +2,9 @@
 const express = require("express");
 const path = require("path");
 const http = require("http");
+
 const root = path.resolve(path.dirname(""));
+const room = require(`${root}/lib/socketroom.js`);
 
 //Variables
 var rooms = {};
@@ -33,11 +35,7 @@ app.all("/", function(req, res) {
 //Routing calls
 app.get("/call/:path", function(req, res) {
 
- // if (req.path in rooms) {
-    res.sendFile(htmlroot + "/call.html");
-  //} else {
- //   res.sendFile(htmlroot + "/404.html");
- // }
+  res.sendFile(htmlroot + "/call.html");
 });
 
 //404
@@ -52,27 +50,32 @@ io.sockets.on("connection", function(socket) {
   socket.on("header", function(data) {
 
     if (data.room in rooms) {
-      rooms[data.room].header = data.packet;
+      rooms[data.room].updateHeader(data.packet);
     }
+
   });
 
   socket.on("reqHeader", function(data) {
     //Send header
     if (data.room in rooms) {
-      socket.emit("reqHeader", rooms[data.room].header)
+      socket.emit("reqHeader", rooms[data.room].header);
     }
   });
 
   socket.on("stream", function(data) {
 
     //Locate room and send packets to all users in that room
-    if (data.room in rooms) {
-      for (var i in rooms[data.room].users) {
+    //if (data.room in rooms) {
+    //  for (var i in rooms[data.room].users) {
 
-        if (rooms[data.room].users[i].id !== socket.id) {
-          rooms[data.room].users[i].emit("stream", data.packet);
-        }
-      }
+    //    if (rooms[data.room].users[i].id !== socket.id) {
+    //      rooms[data.room].users[i].emit("stream", data.packet);
+    //    }
+    //  }
+    //}
+
+    if (data.room in rooms) {
+      rooms[data.room].stream(socket, data.packet);
     }
   });
 
@@ -83,29 +86,31 @@ io.sockets.on("connection", function(socket) {
     if (data.room in rooms) {
 
       //Room exists, join room
-      rooms[data.room].users.push(socket);
+      //rooms[data.room].users.push(socket);
+      rooms[data.room].addUser(socket);
     } else {
 
       //Room doesn't exist, create room
-      createRoom(data.room, socket);
+      //createRoom(data.room, socket);
+      rooms[data.room] = new room(data.room, socket);
     }
   });
 
   //Disconnect
   socket.on("disconnect", function() {
 
-    for (var i in rooms) {
+    //for (var i in rooms) {
 
-      if (rooms[i].users.includes(socket)) {
+    //  if (rooms[i].users.includes(socket)) {
 
-        rooms[i].users.splice(rooms[i].users.indexOf(socket));
+    //    rooms[i].users.splice(rooms[i].users.indexOf(socket));
         
-        if (rooms[i].users.length == 0) {
-          delete rooms[i];
-          break;
-        }
-      }
-    }
+    //    if (rooms[i].users.length == 0) {
+    //      delete rooms[i];
+    //      break;
+    //    }
+    //  }
+    //}
   });
 });
 
