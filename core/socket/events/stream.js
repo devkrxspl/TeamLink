@@ -17,6 +17,8 @@ module.exports = class StreamEvent extends SocketEvent {
 
     var rooms = roomhandler.raw;
 
+    //console.log(rooms);
+
     if (data.room in rooms) {
       rooms[data.room].stream(socket, data.packet);
     }
