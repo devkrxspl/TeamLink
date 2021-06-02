@@ -5,12 +5,19 @@ const http = require("http");
 const root = path.resolve(path.dirname(""));
 
 //Variables
-var connections = [];
 var rooms = {};
 
 //Roots
 const publicroot = root + "/public";
 const htmlroot = publicroot + "/html";
+
+//Functions
+function createRoom(id, socket) {
+  rooms[id] = {
+    header : undefined,
+    users : [socket]
+  };
+}
 
 //App Setup
 const app = express();
@@ -25,25 +32,32 @@ app.all("/", function(req, res) {
 
 //Routing calls
 app.get("/call/:path", function(req, res) {
-  res.sendFile(htmlroot + "/call.html");
+
+ // if (req.path in rooms) {
+    res.sendFile(htmlroot + "/call.html");
+  //} else {
+ //   res.sendFile(htmlroot + "/404.html");
+ // }
 });
 
 //404
 app.get("/:path", function(req, res) {
-  res.send("404");
+  res.sendFile(htmlroot + "/404.html");
 });
 
 //IO
 io.sockets.on("connection", function(socket) {
 
-  connections.push(socket);
-
   //Stream handling
   socket.on("header", function(data) {
-    rooms[data.room].header = data.packet;
+
+    if (data.room in rooms) {
+      rooms[data.room].header = data.packet;
+    }
   });
 
   socket.on("reqHeader", function(data) {
+    //Send header
     if (data.room in rooms) {
       socket.emit("reqHeader", rooms[data.room].header)
     }
@@ -52,10 +66,12 @@ io.sockets.on("connection", function(socket) {
   socket.on("stream", function(data) {
 
     //Locate room and send packets to all users in that room
-    for (var i in rooms[data.room].users) {
+    if (data.room in rooms) {
+      for (var i in rooms[data.room].users) {
 
-      if (rooms[data.room].users[i].id !== socket.id) {
-        rooms[data.room].users[i].emit("stream", data.packet);
+        if (rooms[data.room].users[i].id !== socket.id) {
+          rooms[data.room].users[i].emit("stream", data.packet);
+        }
       }
     }
   });
@@ -71,10 +87,24 @@ io.sockets.on("connection", function(socket) {
     } else {
 
       //Room doesn't exist, create room
-      rooms[data.room] = {
-        header : undefined,
-        users : [socket]
-      };
+      createRoom(data.room, socket);
+    }
+  });
+
+  //Disconnect
+  socket.on("disconnect", function() {
+
+    for (var i in rooms) {
+
+      if (rooms[i].users.includes(socket)) {
+
+        rooms[i].users.splice(rooms[i].users.indexOf(socket));
+        
+        if (rooms[i].users.length == 0) {
+          delete rooms[i];
+          break;
+        }
+      }
     }
   });
 });
