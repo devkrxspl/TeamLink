@@ -5,15 +5,7 @@ const http = require("http");
 
 const root = path.resolve(path.dirname(""));
 const room = require(`${root}/lib/socketroom.js`);
-
-//
-const header = new (require(`${root}/core/socket/events/header.js`))();
-const stream = new (require(`${root}/core/socket/events/stream.js`))();
-const reqheader = new (require(`${root}/core/socket/events/reqHeader.js`))();
-const info = new (require(`${root}/core/socket/events/info.js`))();
-
-//Variables
-var rooms = {};
+const eventloader = require(`${root}/core/socket/eventloader.js`);
 
 //Roots
 const publicroot = root + "/public";
@@ -45,28 +37,10 @@ app.get("/:path", function(req, res) {
 
 io.sockets.on("connection", function(socket) {
 
-  //Stream handling
-  socket.on("header", function(data) {
-    header.invoke(data, socket);
-  });
-
-  socket.on("reqHeader", function(data) {
-    reqheader.invoke(data, socket);
-  });
-
-  socket.on("stream", function(data) {
-    stream.invoke(data, socket);
-  });
-
-  //Socket 
-  socket.on("info", function(data) {
-    info.invoke(data, socket);
-  });
-
-  //Disconnect
-  socket.on("disconnect", function() {
-
-  });
+  for (var i in eventloader.events) {
+    socket.on(i, (...args) => eventloader.events[i].invoke(...args));
+  }
+  
 });
 
 

@@ -8,8 +8,8 @@ module.exports = class ReqHeaderEvent extends SocketEvent {
   
   constructor() {
     super({
-      name : "Prefix",
-      description : "Sets the default prefix for a new guild",
+      name : "ReqHeaderEvent",
+      description : "Sends header to requesting socket",
     });
   }
 

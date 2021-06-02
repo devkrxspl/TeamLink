@@ -8,8 +8,8 @@ module.exports = class HeaderEvent extends SocketEvent {
   
   constructor() {
     super({
-      name : "Prefix",
-      description : "Sets the default prefix for a new guild",
+      name : "HeaderEvent",
+      description : "Sets header for room",
     });
   }
 

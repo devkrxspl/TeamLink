@@ -8,8 +8,8 @@ module.exports = class StreamEvent extends SocketEvent {
   
   constructor() {
     super({
-      name : "Prefix",
-      description : "Sets the default prefix for a new guild",
+      name : "StreamEvent",
+      description : "Streams packets to sockets in room",
     });
   }
 
