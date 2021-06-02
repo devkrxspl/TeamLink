@@ -29,11 +29,12 @@ function stream() {
   audioStreamer.playStream();
 
   socket.on('reqHeader', function(packet){
+    console.log("recieved header");
     audioStreamer.setBufferHeader(packet);
   });
 
   socket.on('stream', function(packet){
-    //console.log("Buffer received: " + packet[0].byteLength + "bytes");
+    console.log("Buffer received: " + packet[0].byteLength + "bytes");
 
     audioStreamer.realtimeBufferPlay(packet);
   });
@@ -53,7 +54,7 @@ function newMedia(init) {
   }, 200); 
 
   media.onRecordingReady = function(packet){
-    //console.log("Header size: " + packet.data.size + "bytes");
+    console.log("Header size: " + packet.data.size + "bytes");
 
     //Send header packet
     socket.emit('header', {"packet" : packet, "room" : path});
@@ -64,7 +65,7 @@ function newMedia(init) {
   }
 
   media.onBufferProcess = function(packet){
-    //console.log("Buffer sent: " + packet[0].size + "bytes");
+    console.log("Buffer sent: " + packet[0].size + "bytes");
     socket.emit('stream', {"packet" : packet, "room" : path});
   }
 

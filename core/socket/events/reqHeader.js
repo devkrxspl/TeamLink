@@ -1,6 +1,7 @@
 //Constants
 const SocketEvent = require("../../../structures/socketevent.js");
 const roomhandler = require("../roomhandler.js");
+const room = require("../../../lib/socketroom.js");
 
 //Main
 module.exports = class ReqHeaderEvent extends SocketEvent {
@@ -12,11 +13,12 @@ module.exports = class ReqHeaderEvent extends SocketEvent {
     });
   }
 
-  async invoke(data, socket) {
+  invoke(data, socket) {
 
     var rooms = roomhandler.raw;
 
     if (data.room in rooms) {
+      
       socket.emit("reqHeader", rooms[data.room].header);
     }
   }

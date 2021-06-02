@@ -1,6 +1,7 @@
 //Constants
 const SocketEvent = require("../../../structures/socketevent.js");
 const roomhandler = require("../roomhandler.js");
+const room = require("../../../lib/socketroom.js");
 
 //Main
 module.exports = class InfoEvent extends SocketEvent {
@@ -12,12 +13,19 @@ module.exports = class InfoEvent extends SocketEvent {
     });
   }
 
-  async invoke(data, socket) {
+  invoke(data, socket) {
 
     var rooms = roomhandler.raw;
 
     if (data.room in rooms) {
-      rooms[data.room].updateHeader(data.packet);
+
+      //Room exists, join room
+      rooms[data.room].addUser(socket);
+
+    } else {
+
+      //Room doesn't exist, create room
+      rooms[data.room] = new room(data.room, socket);
     }
 
     roomhandler.update(rooms);

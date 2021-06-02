@@ -7,10 +7,10 @@ const root = path.resolve(path.dirname(""));
 const room = require(`${root}/lib/socketroom.js`);
 
 //
-const header = require(`${root}/core/socket/events/header.js`);
-const stream = require(`${root}/core/socket/events/stream.js`);
-const reqheader = require(`${root}/core/socket/events/reqHeader.js`);
-const info = require(`${root}/core/socket/events/info.js`);
+const header = new (require(`${root}/core/socket/events/header.js`))();
+const stream = new (require(`${root}/core/socket/events/stream.js`))();
+const reqheader = new (require(`${root}/core/socket/events/reqHeader.js`))();
+const info = new (require(`${root}/core/socket/events/info.js`))();
 
 //Variables
 var rooms = {};
@@ -42,6 +42,7 @@ app.get("/:path", function(req, res) {
 });
 
 //IO
+
 io.sockets.on("connection", function(socket) {
 
   //Stream handling
@@ -50,11 +51,7 @@ io.sockets.on("connection", function(socket) {
   });
 
   socket.on("reqHeader", function(data) {
-
-    //Send header
-    if (data.room in rooms) {
-      socket.emit("reqHeader", rooms[data.room].header);
-    }
+    reqheader.invoke(data, socket);
   });
 
   socket.on("stream", function(data) {
@@ -63,42 +60,15 @@ io.sockets.on("connection", function(socket) {
 
   //Socket 
   socket.on("info", function(data) {
-    
-    //Check if room exists
-    if (data.room in rooms) {
-
-      //Room exists, join room
-      rooms[data.room].addUser(socket);
-
-    } else {
-
-      //Room doesn't exist, create room
-      rooms[data.room] = new room(data.room, socket);
-    }
+    info.invoke(data, socket);
   });
 
   //Disconnect
   socket.on("disconnect", function() {
 
-    //Loop through all rooms
-    for (var i in rooms) {
-
-      //Check if room includes disconnected socket
-      if (rooms[i].users.includes(socket)) {
-        
-        //Remove disconnected socket from room
-        rooms[i].removeUser(socket);
-        
-        //If the room is now empty, delete the room
-        if (rooms[i].users.length == 0) {
-
-          delete rooms[i];
-          break;
-        }
-      }
-    }
   });
 });
+
 
 server.listen(3001);
 console.log();
