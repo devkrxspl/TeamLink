@@ -3,6 +3,15 @@ const socket = io();
 const path = window.location.pathname;
 
 //Main
+socket.on("info", function(error) {
+  console.log(error);
+  if (error) {
+    document.getElementById("error").innerHTML = error;
+  } else {
+    document.getElementById("error-display").remove();
+  }
+});
+
 socket.emit("info", {"room" : path});
 
 //Stream Handling

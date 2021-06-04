@@ -20,12 +20,22 @@ module.exports = class InfoEvent extends SocketEvent {
     if (data.room in rooms) {
 
       //Room exists, join room
-      rooms[data.room].addUser(socket);
+      if (rooms[data.room].users.length < 10) {
+        
+        //Enough space
+        rooms[data.room].addUser(socket);
+        socket.emit("info", undefined);
+
+      } else {
+        //Not enough space 
+        socket.emit("info", "This room is full.");
+      }
 
     } else {
 
       //Room doesn't exist, create room
       rooms[data.room] = new room(data.room, socket);
+      socket.emit("info", undefined);
     }
 
     roomhandler.update(rooms);
