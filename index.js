@@ -22,9 +22,13 @@ app.all("/", function(req, res) {
   res.sendFile(htmlroot + "/index.html");
 });
 
+//New Room 
+app.get('/new', function(req, res) {
+  res.sendFile(htmlroot + "/new.html");
+})
+
 //Routing calls
 app.get("/call/:path", function(req, res) {
-
   res.sendFile(htmlroot + "/call.html");
 });
 
@@ -34,7 +38,6 @@ app.get("/:path", function(req, res) {
 });
 
 //IO
-
 io.sockets.on("connection", function(socket) {
 
   const events = eventloader.events;

@@ -24,6 +24,8 @@ module.exports = class InfoEvent extends SocketEvent {
         
         //Enough space
         rooms[data.room].addUser(socket);
+
+        //Notify the client everything is ok
         socket.emit("info", undefined);
 
       } else {
@@ -34,7 +36,9 @@ module.exports = class InfoEvent extends SocketEvent {
     } else {
 
       //Room doesn't exist, create room
-      rooms[data.room] = new room(data.room, socket);
+      rooms[data.room] = new room(data.room, socket, 10);
+
+      //Send error to client
       socket.emit("info", undefined);
     }
 

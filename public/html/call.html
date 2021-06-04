@@ -5,16 +5,16 @@
   </head>
 
   <body>
-    <!--<div id="video-container">
-      <video id="video" autoplay="autoplay"></video>
-    <div>-->
     <div class="screen" id="error-display" style="z-index:10">
       <h1 id="error"></h1>
     </div>
+
     <div class="screen" id="verify">
       <button id="join" onclick="join()">Join Call</button>
     </div>
-      <button id="mute" onclick="mute()">mute</button>
+    
+    <button id="mute" onclick="mute()">mute</button>
+
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/sfmediastream@1.1.0'></script>
     <script src="../js/call.js"></script>
