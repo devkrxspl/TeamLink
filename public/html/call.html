@@ -2,6 +2,10 @@
   <head>
     <link rel="stylesheet" href="../css/call.css">
     <title>TeamLink - Call</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/socket.js"></script>
+    <script src="../js/interval.js"></script>
+    <script src="../js/ping.js"></script>
   </head>
 
   <body>
@@ -15,8 +19,9 @@
     
     <button id="mute" onclick="mute()">mute</button>
 
-    <script src="/socket.io/socket.io.js"></script>
+    
     <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/sfmediastream@1.1.0'></script>
     <script src="../js/call.js"></script>
+    
   </body>
 </html>

@@ -38,6 +38,7 @@ app.get("/:path", function(req, res) {
 });
 
 //IO
+
 io.sockets.on("connection", function(socket) {
 
   const events = eventloader.events;
@@ -50,7 +51,6 @@ io.sockets.on("connection", function(socket) {
     });
   }
 });
-
 
 server.listen(3001);
 console.log();

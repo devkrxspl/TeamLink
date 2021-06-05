@@ -7,6 +7,7 @@ const stream = new (require(`${root}/core/socket/events/stream.js`))();
 const reqHeader = new (require(`${root}/core/socket/events/reqHeader.js`))();
 const info = new (require(`${root}/core/socket/events/info.js`))();
 const disconnect = new (require(`${root}/core/socket/events/disconnect.js`))();
+const ping = new (require(`${root}/core/socket/events/ping.js`))();
 
 const events = {
   header,
@@ -14,6 +15,7 @@ const events = {
   info,
   reqHeader,
   disconnect,
+  ping,
 }
 
 //Main

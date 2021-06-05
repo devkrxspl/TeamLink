@@ -28,11 +28,7 @@ module.exports = class DisconnectEvent extends SocketEvent {
         //If the room is now empty, delete the room
         if (rooms[i].users.length == 0) {
 
-          //console.log(rooms);
-
           delete rooms[i];
-
-          //console.log(rooms);
 
           break;
         }

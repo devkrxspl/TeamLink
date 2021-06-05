@@ -1,15 +1,19 @@
 //Constants
-const socket = io();
 const path = window.location.pathname;
 
-//Main
+//Variables
+var ping = 0;
+
+//Info
 socket.on("info", function(error) {
-  console.log(error);
+
+  //If error, display. Otherwise, remove the error screen so the user can join the room
   if (error) {
     document.getElementById("error").innerHTML = error;
   } else {
     document.getElementById("error-display").remove();
   }
+
 });
 
 socket.emit("info", {"room" : path});
@@ -21,6 +25,7 @@ streamer.startRecording();
 
 function join() {
 
+  //Remove verify screen
   document.getElementById("verify").remove();
 
   //User joined room, start streaming microphone/receiving audio
@@ -38,12 +43,12 @@ function stream() {
   audioStreamer.playStream();
 
   socket.on('reqHeader', function(packet){
-    console.log("recieved header");
+    //console.log("recieved header");
     audioStreamer.setBufferHeader(packet);
   });
 
   socket.on('stream', function(packet){
-    console.log("Buffer received: " + packet[0].byteLength + "bytes");
+    //console.log("Buffer received: " + packet[0].byteLength + "bytes");
 
     audioStreamer.realtimeBufferPlay(packet);
   });
@@ -63,7 +68,7 @@ function newMedia(init) {
   }, 200); 
 
   media.onRecordingReady = function(packet){
-    console.log("Header size: " + packet.data.size + "bytes");
+    //console.log("Header size: " + packet.data.size + "bytes");
 
     //Send header packet
     socket.emit('header', {"packet" : packet, "room" : path});
@@ -74,7 +79,7 @@ function newMedia(init) {
   }
 
   media.onBufferProcess = function(packet){
-    console.log("Buffer sent: " + packet[0].size + "bytes");
+    //console.log("Buffer sent: " + packet[0].size + "bytes");
     socket.emit('stream', {"packet" : packet, "room" : path});
   }
 
