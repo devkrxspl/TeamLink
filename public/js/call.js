@@ -1,38 +1,41 @@
 //Constants
 const path = window.location.pathname;
 
+document.getElementById("error-display").classList.add("hidden");
+
 //Variables
 var ping = 0;
+var error = document.getElementById("error");
+var errordisplay = document.getElementById("error-display");
+var streamer;
 
 //Info
 socket.on("info", function(error) {
 
   //If error, display. Otherwise, remove the error screen so the user can join the room
   if (error) {
+
+    document.getElementById("error-display").classList.remove("hidden");
     document.getElementById("error").innerHTML = error;
+
   } else {
-    document.getElementById("error-display").remove();
+    //Remove verify screen
+    document.getElementById("verify").remove();
+
+    //User joined room, start streaming microphone/receiving audio
+    newMedia(false, function() {
+
+      //Once media is created, stream
+      stream();
+    });
   }
 
 });
 
-socket.emit("info", {"room" : path});
-
-//Stream Handling
-var streamer = newMedia(true);
-
-streamer.startRecording();
-
 function join() {
 
-  //Remove verify screen
-  document.getElementById("verify").remove();
-
-  //User joined room, start streaming microphone/receiving audio
-  streamer = newMedia(false);
-  streamer.startRecording();
-
-  stream();
+  socket.emit("info", {"room" : path});
+  
 }
 
 function stream() {
@@ -48,7 +51,7 @@ function stream() {
   });
 
   socket.on('stream', function(packet){
-    //console.log("Buffer received: " + packet[0].byteLength + "bytes");
+    console.log("Buffer received: " + packet[0].byteLength + "bytes");
 
     audioStreamer.realtimeBufferPlay(packet);
   });
@@ -57,7 +60,7 @@ function stream() {
   socket.emit("reqHeader", {"room" : path});
 }
 
-function newMedia(init) {
+function newMedia(init, callback) {
 
   //Create media streamer
   var media = new ScarletsMediaPresenter({
@@ -66,6 +69,8 @@ function newMedia(init) {
       echoCancellation: false
     },
   }, 200); 
+
+  media.startRecording();
 
   media.onRecordingReady = function(packet){
     //console.log("Header size: " + packet.data.size + "bytes");
@@ -76,14 +81,17 @@ function newMedia(init) {
     if (init) {
       media.stopRecording();
     }
+
+    streamer = media;
+
+    callback();
+    return;
   }
 
   media.onBufferProcess = function(packet){
-    //console.log("Buffer sent: " + packet[0].size + "bytes");
+    console.log("Buffer sent: " + packet[0].size + "bytes");
     socket.emit('stream', {"packet" : packet, "room" : path});
   }
-
-  return media;
 }
 
 function mute() {
@@ -99,7 +107,8 @@ function mute() {
     //Start streaming microphone
     document.getElementById("mute").innerHTML = "mute";
 
-    streamer = newMedia(false);
-    streamer.startRecording();
+    newMedia(false, function() {
+      streamer.startRecording();
+    });
   }
 }
