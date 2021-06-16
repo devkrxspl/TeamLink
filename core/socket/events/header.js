@@ -18,7 +18,11 @@ module.exports = class HeaderEvent extends SocketEvent {
     var rooms = roomhandler.raw;
 
     if (data.room in rooms) {
-      rooms[data.room].updateHeader(data.packet);
+      
+      //Check if user is in room, if true, update header
+      if (rooms[data.room].includesUser(socket)) {
+        rooms[data.room].updateHeader(data.packet);
+      }
     }
 
     roomhandler.update(rooms);

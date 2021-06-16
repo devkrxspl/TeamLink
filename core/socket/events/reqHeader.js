@@ -19,7 +19,10 @@ module.exports = class ReqHeaderEvent extends SocketEvent {
 
     if (data.room in rooms) {
       
-      socket.emit("reqHeader", rooms[data.room].header);
+      //Make sure user is in room before sending header
+      if (rooms[data.room].includesUser(socket)) {
+        socket.emit("reqHeader", rooms[data.room].header);
+      }
     }
   }
 }

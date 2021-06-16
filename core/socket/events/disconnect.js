@@ -20,7 +20,7 @@ module.exports = class DisconnectEvent extends SocketEvent {
     for (var i in rooms) {
 
       //Check if room includes disconnected socket
-      if (rooms[i].users.includes(socket)) {
+      if (rooms[i].includesUser(socket)) {
         
         //Remove disconnected socket from room
         rooms[i].removeUser(socket);
