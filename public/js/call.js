@@ -45,11 +45,13 @@ function stream() {
   
   audioStreamer.playStream();
 
+  // Handling header reception
   socket.on('reqHeader', function(packet){
     //console.log("recieved header");
     audioStreamer.setBufferHeader(packet);
   });
 
+  // Playing streamed media
   socket.on('stream', function(packet){
     console.log("Buffer received: " + packet[0].byteLength + "bytes");
 
