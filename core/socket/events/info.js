@@ -21,9 +21,7 @@ module.exports = class InfoEvent extends SocketEvent {
     if (data.room in rooms) {
 
       //Room exists, join room
-      if (rooms[data.room].users.length < 3) {
-
-        console.log(rooms[data.room].users.length)
+      if (rooms[data.room].users.length < rooms[data.room].limit) {
         
         //Enough space
         rooms[data.room].addUser(socket);
@@ -35,7 +33,7 @@ module.exports = class InfoEvent extends SocketEvent {
     } else {
 
       //Room doesn't exist, create room
-      rooms[data.room] = new room(data.room, socket, 3);
+      rooms[data.room] = new room(data.room, socket, 5);
 
     }
 
